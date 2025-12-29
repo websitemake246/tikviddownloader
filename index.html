@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataHub NG - Buy Data Bundles</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-database"></i>
+                <h1>DataHub NG</h1>
+            </div>
+            <p class="tagline">Instant Data Top-Up for All Networks</p>
+        </header>
+
+        <main>
+            <div class="network-selector">
+                <h2><i class="fas fa-wifi"></i> Select Your Network</h2>
+                <div class="network-buttons">
+                    <button class="network-btn active" data-network="mtn">
+                        <img src="https://img.icons8.com/color/48/000000/mtn.png" alt="MTN"> MTN
+                    </button>
+                    <button class="network-btn" data-network="airtel">
+                        <img src="https://img.icons8.com/color/48/000000/airtel.png" alt="Airtel"> Airtel
+                    </button>
+                    <button class="network-btn" data-network="glo">
+                        <img src="https://img.icons8.com/color/48/000000/glo.png" alt="Glo"> Glo
+                    </button>
+                    <button class="network-btn" data-network="9mobile">
+                        <img src="https://img.icons8.com/color/48/000000/9mobile.png" alt="9mobile"> 9mobile
+                    </button>
+                </div>
+            </div>
+
+            <div class="data-plans">
+                <h2><i class="fas fa-mobile-alt"></i> Choose Data Plan</h2>
+                <div class="plans-grid" id="plansContainer">
+                    <!-- Plans will be loaded here by JavaScript -->
+                </div>
+            </div>
+
+            <div class="order-form">
+                <h2><i class="fas fa-user"></i> Your Details</h2>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label for="phoneNumber"><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="e.g., 08012345678" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email Address (Optional)</label>
+                        <input type="email" id="email" placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="selectedPlan"><i class="fas fa-shopping-cart"></i> Selected Plan</label>
+                        <input type="text" id="selectedPlan" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount"><i class="fas fa-money-bill-wave"></i> Amount to Pay (₦)</label>
+                        <input type="text" id="amount" readonly>
+                    </div>
+                    
+                    <div class="payment-info">
+                        <h3><i class="fas fa-info-circle"></i> Payment Instructions</h3>
+                        <p>1. Submit your order using the button below</p>
+                        <p>2. Your order will appear in admin panel for approval</p>
+                        <p>3. Admin will contact you for payment details</p>
+                        <p>4. After payment confirmation, data will be sent to your number</p>
+                        
+                        <div class="bank-details">
+                            <p><strong>Bank Transfer Details:</strong></p>
+                            <p><i class="fas fa-university"></i> Bank: First Bank</p>
+                            <p><i class="fas fa-user-tie"></i> Account Name: DataHub NG Enterprises</p>
+                            <p><i class="fas fa-hashtag"></i> Account No: 1234567890</p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Data Request
+                    </button>
+                </form>
+            </div>
+
+            <div class="order-status" id="orderStatus" style="display: none;">
+                <h2><i class="fas fa-hourglass-half"></i> Order Status</h2>
+                <div class="status-card">
+                    <div class="status-header">
+                        <h3 id="statusOrderId">Order #001</h3>
+                        <span class="status-badge pending" id="statusBadge">Pending</span>
+                    </div>
+                    <p><i class="fas fa-phone"></i> <strong>Number:</strong> <span id="statusNumber">08012345678</span></p>
+                    <p><i class="fas fa-database"></i> <strong>Plan:</strong> <span id="statusPlan">1GB - 30 days</span></p>
+                    <p><i class="fas fa-money-bill-wave"></i> <strong>Amount:</strong> ₦<span id="statusAmount">1000</span></p>
+                    <p><i class="fas fa-info-circle"></i> <strong>Status:</strong> Awaiting admin approval & payment confirmation</p>
+                    <button class="close-status" onclick="closeStatus()">Close</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p><i class="fas fa-headset"></i> Contact Support: support@datahubng.com | 0800-DATA-NG</p>
+            <p>© 2023 DataHub NG. All networks are trademarks of their respective owners.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
