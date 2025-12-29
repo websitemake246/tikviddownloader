@@ -383,7 +383,7 @@
             <p>Integrate TikTok video downloading into your application with our free API. No authentication required!</p>
 
             <div class="endpoint-box">
-                <div><span class="method-badge">GET</span>YOUR_WEBSITE_URL/api/download</div>
+                <div><span class="method-badge">GET</span>https://tikviddownloader.vercel.app/api/download</div>
             </div>
 
             <h3>Parameters</h3>
@@ -408,9 +408,9 @@
 
             <h3>Example Request</h3>
             <div class="code-block">
-                <pre>GET YOUR_WEBSITE_URL/api/download?url=https://www.tiktok.com/@username/video/1234567890</pre>
+                <pre>GET https://tikviddownloader.vercel.app/api/download?url=https://www.tiktok.com/@username/video/1234567890</pre>
             </div>
-            <button class="copy-btn" onclick="copyText('GET YOUR_WEBSITE_URL/api/download?url=https://www.tiktok.com/@username/video/1234567890')">📋 Copy Request</button>
+            <button class="copy-btn" onclick="copyText('GET https://tikviddownloader.vercel.app/api/download?url=https://www.tiktok.com/@username/video/1234567890')">📋 Copy Request</button>
 
             <h3>Example Response</h3>
             <div class="code-block">
@@ -462,7 +462,7 @@ if data['status']:
 
             <h3>cURL Example</h3>
             <div class="code-block">
-<pre>curl "YOUR_WEBSITE_URL/api/download?url=https://www.tiktok.com/@username/video/1234567890"</pre>
+<pre>curl "https://tikviddownloader.vercel.app/api/download?url=https://www.tiktok.com/@username/video/1234567890"</pre>
             </div>
             <button class="copy-btn" onclick="copyCode('curl')">📋 Copy Command</button>
 
@@ -621,7 +621,7 @@ if data['status']:
             let code = '';
             if (type === 'js') {
                 code = `const url = 'https://www.tiktok.com/@username/video/1234567890';
-const response = await fetch(\`YOUR_WEBSITE_URL/api/download?url=\${encodeURIComponent(url)}\`);
+const response = await fetch(\`https://tikviddownloader.vercel.app/api/download?url=\${encodeURIComponent(url)}\`);
 const data = await response.json();
 
 if (data.status) {
@@ -634,7 +634,7 @@ if (data.status) {
 
 url = 'https://www.tiktok.com/@username/video/1234567890'
 response = requests.get(
-    'YOUR_WEBSITE_URL/api/download',
+    'https://tikviddownloader.vercel.app/api/download',
     params={'url': url}
 )
 data = response.json()
@@ -644,7 +644,7 @@ if data['status']:
     print('Creator:', data['data']['creator'])
     print('Likes:', data['data']['likes'])`;
             } else if (type === 'curl') {
-                code = 'curl "YOUR_WEBSITE_URL/api/download?url=https://www.tiktok.com/@username/video/1234567890"';
+                code = 'curl "https://tikviddownloader.vercel.app/api/download?url=https://www.tiktok.com/@username/video/1234567890"';
             }
             
             copyText(code);
