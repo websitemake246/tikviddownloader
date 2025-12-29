@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - DataHub NG</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-only {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card h3 {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        .orders-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .pending { background: #fff3cd; color: #856404; }
+        .paid { background: #d4edda; color: #155724; }
+        .completed { background: #d1ecf1; color: #0c5460; }
+        .cancelled { background: #f8d7da; color: #721c24; }
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .approve-btn { background: #28a745; color: white; }
+        .complete-btn { background: #17a2b8; color: white; }
+        .cancel-btn { background: #dc3545; color: white; }
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .mobile-instruction {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container admin-only">
+        <div class="admin-header">
+            <div>
+                <h1><i class="fas fa-user-shield"></i> DataHub NG Admin Panel</h1>
+                <p>Manage data orders and customer requests</p>
+            </div>
+            <button class="logout-btn" onclick="logoutAdmin()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div class="mobile-instruction">
+            <h3><i class="fas fa-mobile-alt"></i> Mobile App Integration</h3>
+            <p>After marking an order as "Paid", use your mobile app to:</p>
+            <ol>
+                <li>Open your data vending app (SmileClub, VTU.ng, etc.)</li>
+                <li>Enter the customer's phone number from the order below</li>
+                <li>Select the exact data plan purchased</li>
+                <li>Complete the data sending process</li>
+                <li>Return here and mark the order as "Completed"</li>
+            </ol>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <div class="number" id="totalOrders">0</div>
+                <p>All time</p>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Approval</h3>
+                <div class="number" id="pendingOrders">0</div>
+                <p>Awaiting payment</p>
+            </div>
+            <div class="stat-card">
+                <h3>Completed Today</h3>
+                <div class="number" id="completedToday">0</div>
+                <p>Successful deliveries</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="number">₦<span id="totalRevenue">0</span></div>
+                <p>All time</p>
+            </div>
+        </div>
+
+        <div class="orders-table">
+            <h2 style="padding: 20px; margin: 0;">Recent Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Network</th>
+                        <th>Plan</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Orders will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="order-form" style="margin-top: 40px;">
+            <h2><i class="fas fa-plus-circle"></i> Add Manual Order</h2>
+            <form id="manualOrderForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manualPhone">Phone Number</label>
+                        <input type="tel" id="manualPhone" placeholder="08012345678" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manualNetwork">Network</label>
+                        <select id="manualNetwork" required>
+                            <option value="">Select Network</option>
+                            <option value="mtn">MTN</option>
+                            <option value="airtel">Airtel</option>
+                            <option value="glo">Glo</option>
+                            <option value="9mobile">9mobile</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manualPlan">Data Plan</label>
+                        <input type="text" id="manualPlan" placeholder="e.g., 1GB - 30 days" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manualAmount">Amount (₦)</label>
+                        <input type="number" id="manualAmount" placeholder="1000" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="manualEmail">Customer Email (Optional)</label>
+                    <input type="email" id="manualEmail" placeholder="customer@email.com">
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus"></i> Add Order Manually
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample orders data (in real app, this would come from a database)
+        let orders = JSON.parse(localStorage.getItem('datahub_orders')) || [
+            {
+                id: 'ORD001',
+                phone: '08012345678',
+                email: 'customer1@email.com',
+                network: 'mtn',
+                plan: '1GB - 30 days',
+                amount: 1000,
+                status: 'completed',
+                date: '2023-10-15 14:30'
+            },
+            {
+                id: 'ORD002',
+                phone: '08098765432',
+                email: '',
+                network: 'airtel',
+                plan: '500MB - 7 days',
+                amount: 500,
+                status: 'paid',
+                date: '2023-10-16 09:15'
+            },
+            {
+                id: 'ORD003',
+                phone: '08055556666',
+                email: 'customer3@email.com',
+                network: 'glo',
+                plan: '2GB - 30 days',
+                amount: 1200,
+                status: 'pending',
+                date: '2023-10-16 10:45'
+            }
+        ];
+
+        // Save orders to localStorage
+        function saveOrders() {
+            localStorage.setItem('datahub_orders', JSON.stringify(orders));
+            updateStats();
+            renderOrdersTable();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(o => o.status === 'pending').length;
+            const completedToday = orders.filter(o => 
+                o.status === 'completed' && 
+                o.date.includes(new Date().toISOString().split('T')[0])
+            ).length;
+            const totalRevenue = orders
+                .filter(o => o.status === 'completed' || o.status === 'paid')
+                .reduce((sum, o) => sum + o.amount, 0);
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+            document.getElementById('completedToday').textContent = completedToday;
+            document.getElementById('totalRevenue').textContent = totalRevenue;
+        }
+
+        // Render orders table
+        function renderOrdersTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+
+            // Sort orders by date (newest first)
+            const sortedOrders = [...orders].sort((a, b) => 
+                new Date(b.date) - new Date(a.date)
+            );
+
+            sortedOrders.forEach(order => {
+                const row = document.createElement('tr');
+                
+                // Status badge
+                let statusBadge = '';
+                switch(order.status) {
+                    case 'pending': statusBadge = '<span class="status-badge pending">Pending Payment</span>'; break;
+                    case 'paid': statusBadge = '<span class="status-badge paid">Paid (Send Data)</span>'; break;
+                    case 'completed': statusBadge = '<span class="status-badge completed">Completed</span>'; break;
+                    case 'cancelled': statusBadge = '<span class="status-badge cancelled">Cancelled</span>'; break;
+                }
+
+                // Action buttons based on status
+                let actions = '';
+                if (order.status === 'pending') {
+                    actions = `
+                        <button class="action-btn approve-btn" onclick="updateOrderStatus('${order.id}', 'paid')">
+                            <i class="fas fa-check"></i> Mark Paid
+                        </button>
+                        <button class="action-btn cancel-btn" onclick="updateOrderStatus('${order.id}', 'cancelled')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    `;
+                } else if (order.status === 'paid') {
+                    actions = `
+                        <button class="action-btn complete-btn" onclick="updateOrderStatus('${order.id}', 'completed')">
+                            <i class="fas fa-check-double"></i> Mark Sent
+                        </button>
+                        <button class="action-btn cancel-btn" onclick="updateOrderStatus('${order.id}', 'cancelled')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    `;
+                } else if (order.status === 'completed') {
+                    actions = '<span class="action-btn" style="background:#ccc; color:#666;">Completed</span>';
+                } else {
+                    actions = '<span class="action-btn" style="background:#ccc; color:#666;">Cancelled</span>';
+                }
+
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>
+                        <strong>${order.phone}</strong>
+                        ${order.email ? `<br><small>${order.email}</small>` : ''}
+                    </td>
+                    <td>${order.network.toUpperCase()}</td>
+                    <td>${order.plan}</td>
+                    <td>₦${order.amount}</td>
+                    <td>${statusBadge}</td>
+                    <td>${order.date}</td>
+                    <td>${actions}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update order status
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                order.date = new Date().toISOString().replace('T', ' ').substring(0, 16);
+                saveOrders();
+                
+                // In a real app, you would send email/SMS notification here
+                alert(`Order ${orderId} marked as ${newStatus}`);
+                
+                // If marked as "paid", show mobile app reminder
+                if (newStatus === 'paid') {
+                    alert(`IMPORTANT: Now open your mobile data app and send ${order.plan} to ${order.phone}. After sending, mark as "Completed".`);
+                }
+            }
+        }
+
+        // Add manual order
+        document.getElementById('manualOrderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('manualPhone').value;
+            const network = document.getElementById('manualNetwork').value;
+            const plan = document.getElementById('manualPlan').value;
+            const amount = parseInt(document.getElementById('manualAmount').value);
+            const email = document.getElementById('manualEmail').value;
+            
+            if (!phone || !network || !plan || !amount) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            // Generate order ID
+            const orderId = 'ORD' + String(orders.length + 1).padStart(3, '0');
+            
+            // Add to orders
+            orders.push({
+                id: orderId,
+                phone: phone,
+                email: email,
+                network: network,
+                plan: plan,
+                amount: amount,
+                status: 'pending',
+                date: new Date().toISOString().replace('T', ' ').substring(0, 16)
+            });
+            
+            saveOrders();
+            
+            // Reset form
+            document.getElementById('manualOrderForm').reset();
+            
+            alert(`Manual order ${orderId} added successfully!`);
+        });
+
+        // Logout function
+        function logoutAdmin() {
+            if (confirm('Are you sure you want to logout?')) {
+                // In a real app, you would clear session/token
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Password protection (basic)
+        function checkAdminAuth() {
+            const password = localStorage.getItem('admin_password');
+            if (!password) {
+                const entered = prompt('Set admin password for first time:');
+                if (entered) {
+                    localStorage.setItem('admin_password', btoa(entered));
+                }
+            } else {
+                const entered = prompt('Enter admin password:');
+                if (btoa(entered) !== password) {
+                    alert('Invalid password!');
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        // Initialize admin panel
+        window.onload = function() {
+            checkAdminAuth();
+            saveOrders(); // This will call updateStats and renderOrdersTable
+        };
+    </script>
+</body>
+</html>
